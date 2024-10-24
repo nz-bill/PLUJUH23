@@ -1,12 +1,14 @@
 package com.example.simpleRest;
 
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/products")
@@ -31,14 +33,14 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable long id, @RequestBody Product newProduct){
+    public Product updateProduct(@PathVariable long id, @RequestBody @Valid Product newProduct){
         return productService.updateProduct(id, newProduct);
 
 
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product){
+    public Product createProduct(@RequestBody @Valid Product product){
        return productService.createProduct(product);
     }
 
@@ -52,4 +54,15 @@ public class ProductController {
            return "product with id " +id + " not found";
        }
     }
+
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<Map<String,String>> handleValidationException(MethodArgumentNotValidException ex){
+//        Map<String,String> errors = new HashMap<>();
+//        ex.getBindingResult()
+//                .getFieldErrors()
+//                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+//        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+//    }
+
+
 }
