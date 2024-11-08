@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-class OrderServiceTest {
+class PurchaseOrderServiceTest {
 
     @Mock
     private OrderRepository orderRepository;
@@ -27,27 +27,27 @@ class OrderServiceTest {
 
     @Test
     void createOrder() {
-        Order order = new Order();
-        order.setId(1L);
+        PurchaseOrder purchaseOrder = new PurchaseOrder();
+        purchaseOrder.setId(1L);
 
-        when(orderRepository.save(order)).thenReturn(order);
+        when(orderRepository.save(purchaseOrder)).thenReturn(purchaseOrder);
 
-        Order result = orderService.createOrder(order);
+        PurchaseOrder result = orderService.createOrder(purchaseOrder);
 
         assertEquals(1L,result.getId());
 
-        verify(orderRepository).save(order);
+        verify(orderRepository).save(purchaseOrder);
 
     }
 
     @Test
     void findOrderById() {
-        Order order = new Order();
-        order.setId(1L);
+        PurchaseOrder purchaseOrder = new PurchaseOrder();
+        purchaseOrder.setId(1L);
 
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(purchaseOrder));
 
-        Order result = orderService.findOrderById(1L);
+        PurchaseOrder result = orderService.findOrderById(1L).orElse(null);
         assertEquals(1L, result.getId());
         verify(orderRepository).findById(1L);
     }

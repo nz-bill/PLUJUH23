@@ -4,6 +4,9 @@ package com.example.UnitTestExempel1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class OrderService {
 
@@ -14,11 +17,27 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public Order createOrder(Order order){
-        return orderRepository.save(order);
+
+    public PurchaseOrder createOrder(PurchaseOrder purchaseOrder){
+        return orderRepository.save(purchaseOrder);
     }
 
-    public Order findOrderById(Long id){
-        return orderRepository.findById(id).orElse(null);
+    public List<PurchaseOrder> findAll(){
+        return orderRepository.findAll();
+    }
+
+    public boolean deleteOrderById(Long id){
+
+        if(orderRepository.existsById(id)){
+            orderRepository.deleteById(id);
+            return  true;
+        }
+        return false;
+
+    }
+
+    public Optional<PurchaseOrder> findOrderById(Long id){
+
+        return orderRepository.findById(id);
     }
 }
