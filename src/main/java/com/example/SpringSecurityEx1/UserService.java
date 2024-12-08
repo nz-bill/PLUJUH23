@@ -25,4 +25,8 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public Optional<User> findUserNyName(String name){
+        return userRepository.findByUsername(name);
+    }
 }

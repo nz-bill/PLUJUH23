@@ -1,21 +1,33 @@
 package com.example.SpringSecurityEx1;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
 
     private final UserService userService;
+    private final JWTUtil jwtUtil;
+
+
+    private final AuthenticationManager authenticationManager;
+
+    private final UserDetailsService userDetailsService;
 
 
     @Autowired
-    public AuthenticationController(UserService userService) {
+    public AuthenticationController(UserService userService, JWTUtil jwtUtil, AuthenticationManager authenticationManager, UserDetailsService userDetailsService) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
     }
 
 
@@ -24,5 +36,24 @@ public class AuthenticationController {
     public String register(@RequestParam String username,@RequestParam String password){
         userService.registerUser(username,password);
         return "user registered successfully";
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam String username, @RequestParam String password){
+
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username,password)
+            );
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+
+            return jwtUtil.generateToken(userDetails.getUsername());
+        } catch(AuthenticationException e){
+            return "invalid credentials";
+        }
+
+
     }
 }

@@ -3,10 +3,13 @@ package com.example.SpringSecurityEx1;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,23 +17,37 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+
+    private final JwtRequestFilter jwtRequestFilter;
+
+    public SecurityConfiguration(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf -> csrf.disable())       //vi disablar csrf för att kunna använda h2-consolen
-        .authorizeHttpRequests(auth -> auth
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/h2-console/**").permitAll()  //vi vill kunna använda h2-conolen utan att logga in
                 .requestMatchers("/auth/register").permitAll()  //vi behöver inte vara inloggade för att registrera oss
+                .requestMatchers("/auth/login").permitAll()
                 .anyRequest().authenticated())
-
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 //h2-console använder frames så vi behöver först tillåta det för att kunna se nåt i h2-console
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .formLogin(Customizer.withDefaults())       //vi använder standard inställningar för /login endpoint
-                .logout(Customizer.withDefaults());         //vi använder standard inställningar för /logout endpoint
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+
+
+
+               // .formLogin(Customizer.withDefaults())       //vi använder standard inställningar för /login endpoint
+                //.logout(Customizer.withDefaults());         //vi använder standard inställningar för /logout endpoint
 
         return http.build();
     }
@@ -63,6 +80,13 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder(){
         // BCrypt används för att kryptera lösenord
         return new BCryptPasswordEncoder();
+    }
+
+
+    // vi behöver definiera en authenticationmanager som bean så spring kan injicera den i vår AuthenticationController
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
 
