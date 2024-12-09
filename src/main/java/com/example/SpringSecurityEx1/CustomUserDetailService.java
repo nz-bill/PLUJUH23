@@ -1,5 +1,6 @@
 package com.example.SpringSecurityEx1;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +27,9 @@ public class CustomUserDetailService implements UserDetailsService {
         User user= userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("user not found"));
 
         //skapar och returnerar ett userDetails objekt baserat på ett User objekt hämtat från databasen
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(), new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(user.getUsername(),
+                user.getPassword(),
+                user.getRoles().stream().map(role ->       //lägger till roller/authorities
+                        new SimpleGrantedAuthority(role.getName())).toList());
     }
 }
