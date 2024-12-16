@@ -54,14 +54,14 @@ public class AuthenticationController {
 
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password){
+    public String login(@RequestBody UserAuthDTO userDto){
 
         try{
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username,password)
+                    new UsernamePasswordAuthenticationToken(userDto.getUsername(),userDto.getPassword())
             );
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userDto.getUsername());
 
 
             return jwtUtil.generateToken(userDetails.getUsername());

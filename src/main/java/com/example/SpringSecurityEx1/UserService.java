@@ -4,7 +4,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -32,6 +35,20 @@ public class UserService {
 
 
         return userRepository.save(user);
+    }
+
+    public List<UserDto> getAllUses(){
+        List<UserDto> userDtoList = new ArrayList<>();
+        List<User> userList = userRepository.findAll();
+
+        userList.forEach(user ->{
+            Long id = user.getId();
+            String username = user.getUsername();
+            Set<Role> roles = user.getRoles();
+            userDtoList.add(new UserDto(id, username, roles));
+        });
+
+        return userDtoList;
     }
 
     public Optional<User> findUserNyName(String name){

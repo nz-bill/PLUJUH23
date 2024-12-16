@@ -11,7 +11,7 @@ public class UserAuthDTO {
     private String username;
 
     @NotNull(message = "Password cannot be null")
-    @Min(value = 8,message = "Password has to  be at lest 8 characters long")
+    @Size(min = 8, message = "Password has to  be at lest 8 characters long")
     private String password;
 
     public String getUsername() {
