@@ -22,12 +22,12 @@ public class UserService {
     }
 
 
-    public User registerUser(String userName, String rawPassword){
+    public User registerUser(UserAuthDTO userDto){
         User user = new User();
         Role role = roleRepository.findByName("ROLE_USER");
 
-        user.setUsername(userName);
-        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setUsername(userDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.getRoles().add(role);
 
 

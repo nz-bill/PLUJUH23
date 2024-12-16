@@ -1,7 +1,9 @@
 package com.example.SpringSecurityEx1;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -32,11 +34,24 @@ public class AuthenticationController {
 
 
     //en endpoint för att registrera nya användare
+//    @PostMapping("/register")
+//    public String register(@RequestParam String username,@RequestParam String password){
+//        userService.registerUser(username,password);
+//        return "user registered successfully";
+//    }
+
     @PostMapping("/register")
-    public String register(@RequestParam String username,@RequestParam String password){
-        userService.registerUser(username,password);
+    public String register(@Valid @RequestBody UserAuthDTO user){
+
+
+        userService.registerUser(user);
+
         return "user registered successfully";
     }
+
+
+
+
 
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password){
