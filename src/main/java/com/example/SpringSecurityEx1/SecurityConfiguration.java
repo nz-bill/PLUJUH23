@@ -42,6 +42,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/h2-console/**").permitAll()  //vi vill kunna använda h2-conolen utan att logga in
                 .requestMatchers("/auth/register").permitAll()  //vi behöver inte vara inloggade för att registrera oss
                 .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/user/**").permitAll()
                 .anyRequest().authenticated())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 //h2-console använder frames så vi behöver först tillåta det för att kunna se nåt i h2-console

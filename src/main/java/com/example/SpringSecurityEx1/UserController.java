@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
+    @GetMapping("/public")
+    public String publicEndpoint(){
+        return "detta är öppet för alla!";
+    }
+
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN)")
     @GetMapping
     public String sayHello(){
