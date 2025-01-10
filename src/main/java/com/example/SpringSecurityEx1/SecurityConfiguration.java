@@ -43,6 +43,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/auth/register").permitAll()  //vi behöver inte vara inloggade för att registrera oss
                 .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/secure/**").permitAll()
                 .anyRequest().authenticated())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 //h2-console använder frames så vi behöver först tillåta det för att kunna se nåt i h2-console
